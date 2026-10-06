@@ -35,7 +35,8 @@ WASM_EXNREF=false
 # https://github.com/emscripten-core/emscripten/issues/10603
 LTO=false
 
-# Optimize the main wasm-vips binary for throughput rather than size.\n# Renzu primarily uses image decode -> transform -> encode pipelines.\nPERFORMANCE=false
+# Optimize the main wasm-vips binary for throughput rather than size.
+# Renzu primarily uses image decode -> transform -> encode pipelines.\nPERFORMANCE=false
 
 # Dynamic loadable modules, enabled by default
 MODULES=true
