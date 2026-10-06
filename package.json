@@ -54,7 +54,7 @@
     "bench": "npm run bench:node",
     "bench:node": "npm --prefix test/bench test",
     "bench:web": "serve -c test/bench/serve.json",
-    "build:performance": "docker build -t wasm-vips . && docker run -it --rm -v $(pwd):/src wasm-vips ./build.sh --performance"
+    "build:performance": "docker build -t wasm-vips . && docker run -it --rm -v $(pwd):/src wasm-vips ./build.sh --performance --enable-lto"
   },
   "devDependencies": {
     "@biomejs/biome": "^2.5.14",
