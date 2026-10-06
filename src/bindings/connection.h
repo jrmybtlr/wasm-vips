@@ -53,6 +53,7 @@ class Source : public Connection {
     static Source new_from_file(const std::string &filename);
 
     static Source new_from_memory(const std::string &memory);
+    static Source new_from_memory(emscripten::val memory);
 
     VipsSource *get_source() const {
         return reinterpret_cast<VipsSource *>(get_object());
