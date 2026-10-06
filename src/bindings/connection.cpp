@@ -24,6 +24,34 @@ Source Source::new_from_memory(const std::string &memory) {
     return Source(input);
 }
 
+Source Source::new_from_memory(emscripten::val memory) {
+    // Normalize ArrayBuffer / typed arrays to Uint8Array, then copy directly
+    // into Wasm memory. The VipsBlob takes ownership of that allocation, so
+    // unlike the std::string path this avoids the intermediate blob copy.
+    emscripten::val bytes = BlobVal.new_(memory);
+    size_t length = bytes["byteLength"].as<size_t>();
+    void *data = g_malloc(length);
+
+    if (length > 0) {
+        emscripten::val heap = emscripten::val::module_property("HEAPU8");
+        heap.call<void>("set", bytes, reinterpret_cast<uintptr_t>(data));
+    }
+
+    VipsBlob *blob = vips_blob_new(g_free, data, length);
+    if (blob == nullptr) {
+        g_free(data);
+        throw Error("unable to make source blob from memory");
+    }
+
+    VipsSource *input = vips_source_new_from_blob(blob);
+    vips_area_unref(VIPS_AREA(blob));
+
+    if (input == nullptr)
+        throw Error("unable to make source from memory");
+
+    return Source(input);
+}
+
 int64_t SourceCustom::read_handler(VipsSourceCustom *source, void *data,
                                    int64_t length, void *user) {
     if (length <= 0)
