@@ -17,7 +17,8 @@
   "type": "module",
   "main": "perf.js",
   "scripts": {
-    "test": "node perf"
+    "test": "node perf",
+    "matrix": "bash run-matrix.sh"
   },
   "devDependencies": {
     "benchmark": "^2.1.4"
