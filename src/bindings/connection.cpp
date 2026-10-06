@@ -3,6 +3,13 @@
 
 namespace vips {
 
+namespace {
+int free_blob_data(void *data, void *) {
+    g_free(data);
+    return 0;
+}
+}  // namespace
+
 Source Source::new_from_file(const std::string &filename) {
     VipsSource *input = vips_source_new_from_file(filename.c_str());
 
@@ -37,7 +44,7 @@ Source Source::new_from_memory(emscripten::val memory) {
         heap.call<void>("set", bytes, reinterpret_cast<uintptr_t>(data));
     }
 
-    VipsBlob *blob = vips_blob_new(g_free, data, length);
+    VipsBlob *blob = vips_blob_new(free_blob_data, data, length);
     if (blob == nullptr) {
         g_free(data);
         throw Error("unable to make source blob from memory");
