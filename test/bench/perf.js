@@ -121,6 +121,28 @@ const jpegSuite = new Benchmark.Suite('jpeg').add('wasm-vips-buffer-file', {
   console.log(`jpeg ${String(event.target)}`);
 });
 
+// JPEG codec isolation
+const jpegEncodeImage = vips.Image.thumbnailBuffer(inputJpgBuffer, width, {
+  height
+});
+
+const jpegCodecSuite = new Benchmark.Suite('jpeg-codec').add('decode-buffer', {
+  defer: true,
+  fn: (deferred) => {
+    const im = vips.Image.newFromBuffer(inputJpgBuffer);
+    im.delete();
+    deferred.resolve();
+  }
+}).add('encode-buffer', {
+  defer: true,
+  fn: (deferred) => {
+    jpegEncodeImage.jpegsaveBuffer(defaultJpegSaveOptions);
+    deferred.resolve();
+  }
+}).on('cycle', (event) => {
+  console.log('jpeg-codec ' + String(event.target));
+});
+
 // Effect of applying operations
 const operationsSuite = new Benchmark.Suite('operations').add('wasm-vips-sharpen-mild', {
   defer: true,
@@ -408,4 +430,4 @@ const webpSuite = new Benchmark.Suite('webp').add('wasm-vips-buffer-file', {
   console.log(`webp ${String(event.target)}`);
 });
 
-runSuites([jpegSuite, operationsSuite, pngSuite, webpSuite]);
+runSuites([jpegCodecSuite, jpegSuite, operationsSuite, pngSuite, webpSuite]);
