@@ -119,6 +119,22 @@ const jpegSuite = new Benchmark.Suite('jpeg').add('wasm-vips-buffer-file', {
     source.delete();
     deferred.resolve();
   }
+}).add('wasm-vips-memory-source-target', {
+  defer: true,
+  fn: (deferred) => {
+    const source = vips.Source.newFromMemory(inputJpgBuffer);
+    const target = vips.Target.newToMemory();
+    const im = vips.Image.thumbnailSource(source, width, {
+      height
+    });
+    im.jpegsaveTarget(target, defaultJpegSaveOptions);
+    const output = target.getBlob();
+    if (output.byteLength === 0) throw new Error('empty JPEG output');
+    im.delete();
+    target.delete();
+    source.delete();
+    deferred.resolve();
+  }
 }).add('wasm-vips-file-buffer', {
   defer: true,
   fn: (deferred) => {
