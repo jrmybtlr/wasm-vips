@@ -63,7 +63,17 @@ const runSuites = (suites) => {
 };
 
 // JPEG
-const jpegSuite = new Benchmark.Suite('jpeg').add('wasm-vips-buffer-file', {
+const jpegSuite = new Benchmark.Suite('jpeg').add('wasm-vips-memory-buffer-buffer', {
+  defer: true,
+  fn: (deferred) => {
+    const im = vips.Image.thumbnailBuffer(inputJpgBuffer, width, {
+      height
+    });
+    im.jpegsaveBuffer(defaultJpegSaveOptions);
+    im.delete();
+    deferred.resolve();
+  }
+}).add('wasm-vips-buffer-file', {
   defer: true,
   fn: (deferred) => {
     const im = vips.Image.thumbnailBuffer(inputJpgBuffer, width, {
