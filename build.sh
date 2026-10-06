@@ -155,7 +155,7 @@ VERSION_EXIF=0.6.26         # https://github.com/libexif/libexif
 VERSION_LCMS2=2.19.1        # https://github.com/mm2/Little-CMS
 VERSION_HWY=1.4.0           # https://github.com/google/highway
 VERSION_BROTLI=1.2.0        # https://github.com/google/brotli
-VERSION_MOZJPEG=3.2.1       # https://github.com/libjpeg-turbo/libjpeg-turbo
+VERSION_JPEG_TURBO=3.2.1       # https://github.com/libjpeg-turbo/libjpeg-turbo
 VERSION_SIMDE=0.8.2        # https://github.com/simd-everywhere/simde
 VERSION_UHDR=2.0.2          # https://github.com/google/libultrahdr
 VERSION_JXL=0.12.0          # https://github.com/libjxl/libjxl
@@ -186,7 +186,7 @@ VERSION_EMSCRIPTEN="$(emcc -dumpversion)"
   printf "  \"imagequant\": \"${VERSION_IMAGEQUANT}\",\n"; \
   [ -n "$DISABLE_JXL" ] || printf "  \"jxl\": \"${VERSION_JXL}\",\n"; \
   printf "  \"lcms\": \"${VERSION_LCMS2}\",\n"; \
-  printf "  \"mozjpeg\": \"${VERSION_MOZJPEG}\",\n"; \
+  printf "  \"mozjpeg\": \"${VERSION_JPEG_TURBO}\",\n"; \
   printf "  \"simde\": \"${VERSION_SIMDE}\",\n"; \
   printf "  \"png\": \"${VERSION_PNG}\",\n"; \
   [ -n "$DISABLE_SVG" ] || printf "  \"resvg\": \"${VERSION_RESVG}\",\n"; \
@@ -320,7 +320,7 @@ node --version
 [ -f "$TARGET/lib/pkgconfig/libjpeg.pc" ] || (
   stage "Compiling jpeg"
   mkdir $DEPS/jpeg
-  curl -Ls https://github.com/libjpeg-turbo/libjpeg-turbo/releases/download/$VERSION_MOZJPEG/libjpeg-turbo-$VERSION_MOZJPEG.tar.gz | tar xzC $DEPS/jpeg --strip-components=1
+  curl -Ls https://github.com/libjpeg-turbo/libjpeg-turbo/releases/download/$VERSION_JPEG_TURBO/libjpeg-turbo-$VERSION_JPEG_TURBO.tar.gz | tar xzC $DEPS/jpeg --strip-components=1
 
   # libjpeg-turbo's Emscripten SIMD path uses SIMDe to translate Arm/Neon
   # intrinsics into WebAssembly SIMD. This is the modern replacement for the
