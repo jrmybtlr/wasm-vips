@@ -35,6 +35,8 @@ WASM_EXNREF=false
 # https://github.com/emscripten-core/emscripten/issues/10603
 LTO=false
 
+# Optimize the main wasm-vips binary for throughput rather than size.\n# Renzu primarily uses image decode -> transform -> encode pipelines.\nPERFORMANCE=false
+
 # Dynamic loadable modules, enabled by default
 MODULES=true
 
@@ -60,6 +62,7 @@ BINDINGS=true
 while [ $# -gt 0 ]; do
   case $1 in
     --enable-lto) LTO=true ;;
+    --performance) PERFORMANCE=true ;;
     --enable-wasm-fs) WASM_FS=true ;;
     --enable-new-wasm-eh) WASM_EXNREF=true ;;
     --disable-uhdr) UHDR=false ;;
@@ -97,11 +100,17 @@ done
 
 # Rust flags
 export RUSTFLAGS="-Copt-level=z -Ctarget-feature=+atomics,+simd128 -Zdefault-visibility=hidden -Zlocation-detail=none -Zfmt-debug=none"
+if [ "$PERFORMANCE" = "true" ]; then
+  export RUSTFLAGS="-Copt-level=3 -Ctarget-feature=+atomics,+simd128 -Zdefault-visibility=hidden -Zlocation-detail=none -Zfmt-debug=none"
+fi
 
 # Common compiler flags
 # Default optimization level is for binary size (-Os)
 # Overridden to performance (-O3) for select dependencies that benefit
 COMMON_FLAGS="-Os -pthread -fwasm-exceptions"
+if [ "$PERFORMANCE" = "true" ]; then
+  COMMON_FLAGS="-O3 -pthread -fwasm-exceptions"
+fi
 if [ "$WASM_EXNREF" = "true" ]; then
   COMMON_FLAGS+=" -sWASM_LEGACY_EXCEPTIONS=0"
   export RUSTFLAGS+=" -Cllvm-args=-wasm-use-legacy-eh=0"
