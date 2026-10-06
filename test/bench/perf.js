@@ -93,6 +93,18 @@ const jpegSuite = new Benchmark.Suite('jpeg').add('wasm-vips-buffer-file', {
     im.delete();
     deferred.resolve();
   }
+}).add('wasm-vips-memory-source-buffer', {
+  defer: true,
+  fn: (deferred) => {
+    const source = vips.Source.newFromMemory(inputJpgBuffer);
+    const im = vips.Image.thumbnailSource(source, width, {
+      height
+    });
+    im.jpegsaveBuffer(defaultJpegSaveOptions);
+    im.delete();
+    source.delete();
+    deferred.resolve();
+  }
 }).add('wasm-vips-stream-stream', {
   defer: true,
   fn: (deferred) => {
