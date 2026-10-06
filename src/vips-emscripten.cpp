@@ -509,7 +509,14 @@ EMSCRIPTEN_BINDINGS(my_module) {
         .constructor<>()
         // Handwritten class functions
         .class_function("newFromFile", &Source::new_from_file)
-        .class_function("newFromMemory", &Source::new_from_memory);
+        .class_function(
+            "newFromMemory",
+            select_overload<Source(const std::string &)>(
+                &Source::new_from_memory))
+        .class_function(
+            "newFromMemory",
+            select_overload<Source(emscripten::val)>(
+                &Source::new_from_memory));
 
     // SourceCustom class
     class_<SourceCustom, base<Source>>("SourceCustom")
