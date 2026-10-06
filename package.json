@@ -53,7 +53,8 @@
     "test:web": "serve -c test/unit/serve.json",
     "bench": "npm run bench:node",
     "bench:node": "npm --prefix test/bench test",
-    "bench:web": "serve -c test/bench/serve.json"
+    "bench:web": "serve -c test/bench/serve.json",
+    "build:performance": "docker build -t wasm-vips . && docker run -it --rm -v $(pwd):/src wasm-vips ./build.sh --performance"
   },
   "devDependencies": {
     "@biomejs/biome": "^2.5.14",
