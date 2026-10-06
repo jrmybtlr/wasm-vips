@@ -24,7 +24,8 @@ used under the terms of the following licenses:
 | libultrahdr   | MIT License                                                                                              |
 | libvips       | LGPLv3                                                                                                   |
 | libwebp       | New BSD License                                                                                          |
-| mozjpeg       | [zlib License, IJG License, BSD 3-Clause](https://github.com/mozilla/mozjpeg/blob/master/LICENSE.md)     |
+| libjpeg-turbo | [zlib License, IJG License, BSD 3-Clause](https://github.com/libjpeg-turbo/libjpeg-turbo/blob/main/LICENSE.md)     |
+| SIMDe         | MIT License                                                                                              |
 | resvg         | MIT License                                                                                              |
 | zlib-ng       | [zlib License](https://github.com/zlib-ng/zlib-ng/blob/develop/LICENSE.md)                               |
 
