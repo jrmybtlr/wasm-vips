@@ -255,6 +255,11 @@ Image Image::new_from_memory(uintptr_t data, size_t size, int width, int height,
     return Image(image);
 }
 
+Image Image::new_from_buffer(emscripten::val buffer) {
+    Source source = Source::new_from_memory(buffer);
+    return Image::new_from_source(source);
+}
+
 Image Image::new_from_buffer(const std::string &buffer,
                              const std::string &option_string,
                              emscripten::val js_options) {
