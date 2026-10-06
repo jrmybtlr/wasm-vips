@@ -154,7 +154,8 @@ VERSION_EXIF=0.6.26         # https://github.com/libexif/libexif
 VERSION_LCMS2=2.19.1        # https://github.com/mm2/Little-CMS
 VERSION_HWY=1.4.0           # https://github.com/google/highway
 VERSION_BROTLI=1.2.0        # https://github.com/google/brotli
-VERSION_MOZJPEG=0826579     # https://github.com/mozilla/mozjpeg
+VERSION_MOZJPEG=3.2.1       # https://github.com/libjpeg-turbo/libjpeg-turbo
+VERSION_SIMDE=0.8.2        # https://github.com/simd-everywhere/simde
 VERSION_UHDR=2.0.2          # https://github.com/google/libultrahdr
 VERSION_JXL=0.12.0          # https://github.com/libjxl/libjxl
 VERSION_PNG=1.6.58          # https://github.com/pnggroup/libpng
@@ -317,17 +318,19 @@ node --version
 [ -f "$TARGET/lib/pkgconfig/libjpeg.pc" ] || (
   stage "Compiling jpeg"
   mkdir $DEPS/jpeg
-  curl -Ls https://github.com/mozilla/mozjpeg/archive/$VERSION_MOZJPEG.tar.gz | tar xzC $DEPS/jpeg --strip-components=1
+  curl -Ls https://github.com/libjpeg-turbo/libjpeg-turbo/releases/download/$VERSION_MOZJPEG/libjpeg-turbo-$VERSION_MOZJPEG.tar.gz | tar xzC $DEPS/jpeg --strip-components=1
+
+  # libjpeg-turbo's Emscripten SIMD path uses SIMDe to translate Arm/Neon
+  # intrinsics into WebAssembly SIMD. This is the modern replacement for the
+  # old x86 assembly path, which cannot be assembled for wasm.
+  mkdir -p $DEPS/simde
+  curl -Ls https://github.com/simd-everywhere/simde/archive/refs/tags/v$VERSION_SIMDE.tar.gz | tar xzC $DEPS/simde --strip-components=1
+
   cd $DEPS/jpeg
-  # TODO(kleisauke): Discuss this patch upstream
-  curl -Ls https://github.com/kleisauke/libjpeg-turbo/commit/a60fb467fc7601b008741d42e98268c8a7bcb5b4.patch | patch -p1
-  # Use libjpeg-turbo behaviour by default
-  sed -i 's/JCP_MAX_COMPRESSION/JCP_FASTEST/' jcapimin.c
-  # Compile without SIMD support, see: https://github.com/libjpeg-turbo/libjpeg-turbo/issues/250
-  # Disable environment variables usage, see: https://github.com/libjpeg-turbo/libjpeg-turbo/issues/600
   emcmake cmake -B_build -S. -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=$TARGET -DBUILD_SHARED_LIBS=OFF \
-    -DWITH_JPEG8=ON -DWITH_SIMD=OFF -DWITH_TURBOJPEG=OFF -DPNG_SUPPORTED=OFF \
-    -DCMAKE_C_FLAGS="$CFLAGS -O3 -DNO_GETENV -DNO_PUTENV"
+    -DWITH_JPEG8=ON -DWITH_SIMD=ON -DWITH_SIMDE=ON -DWITH_TURBOJPEG=OFF -DPNG_SUPPORTED=OFF \
+    -DCMAKE_POSITION_INDEPENDENT_CODE=ON \
+    -DCMAKE_C_FLAGS="$CFLAGS -O3 -DNO_GETENV -DNO_PUTENV -I$DEPS/simde"
   make -C _build install
 )
 
