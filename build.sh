@@ -36,7 +36,8 @@ WASM_EXNREF=false
 LTO=false
 
 # Optimize the main wasm-vips binary for throughput rather than size.
-# Renzu primarily uses image decode -> transform -> encode pipelines.\nPERFORMANCE=false
+# Renzu primarily uses image decode -> transform -> encode pipelines.
+PERFORMANCE=false
 
 # Dynamic loadable modules, enabled by default
 MODULES=true
@@ -186,6 +187,7 @@ VERSION_EMSCRIPTEN="$(emcc -dumpversion)"
   [ -n "$DISABLE_JXL" ] || printf "  \"jxl\": \"${VERSION_JXL}\",\n"; \
   printf "  \"lcms\": \"${VERSION_LCMS2}\",\n"; \
   printf "  \"mozjpeg\": \"${VERSION_MOZJPEG}\",\n"; \
+  printf "  \"simde\": \"${VERSION_SIMDE}\",\n"; \
   printf "  \"png\": \"${VERSION_PNG}\",\n"; \
   [ -n "$DISABLE_SVG" ] || printf "  \"resvg\": \"${VERSION_RESVG}\",\n"; \
   printf "  \"tiff\": \"${VERSION_TIFF}\",\n"; \
