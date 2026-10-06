@@ -14,6 +14,8 @@ const jpegOut = getPath('output.jpg');
 const pngOut = getPath('output.png');
 const webpOut = getPath('output.webp');
 
+const concurrency = Number.parseInt(process.env.VIPS_CONCURRENCY ?? '4', 10);
+
 const vips = await Vips({
   // Disable dynamic modules
   dynamicLibraries: []
@@ -23,7 +25,9 @@ const vips = await Vips({
 vips.Cache.max(0);
 
 // Reduce concurrency, as a large thread pool can slow down overall processing
-vips.concurrency(4);
+vips.concurrency(concurrency);
+
+console.log(`wasm-vips concurrency=${concurrency}`);
 
 const inputJpgBuffer = vips.FS.readFile(inputJpg);
 const defaultJpegSaveOptions = {
