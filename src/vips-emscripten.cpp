@@ -571,7 +571,10 @@ EMSCRIPTEN_BINDINGS(my_module) {
             "newFromMemory",
             select_overload<Image(uintptr_t, size_t, int, int, int,
                                   emscripten::val)>(&Image::new_from_memory))
-        .class_function("newFromBuffer", &Image::new_from_buffer)
+        .class_function(
+            "newFromBuffer",
+            select_overload<Image(const std::string &, const std::string &, emscripten::val)>(
+                &Image::new_from_buffer))
         .class_function("newFromBuffer",
                         optional_override([](const std::string &buffer,
                                              emscripten::val options) {
@@ -586,6 +589,9 @@ EMSCRIPTEN_BINDINGS(my_module) {
                         optional_override([](const std::string &buffer) {
                             return Image::new_from_buffer(buffer);
                         }))
+        .class_function(
+            "newFromBuffer",
+            select_overload<Image(emscripten::val)>(&Image::new_from_buffer))
         .class_function("newFromSource", &Image::new_from_source)
         .class_function("newFromSource",
                         optional_override([](const Source &source,
@@ -1343,6 +1349,10 @@ EMSCRIPTEN_BINDINGS(my_module) {
         .class_function("thumbnailBuffer", &Image::thumbnail_buffer)
         .class_function("thumbnailBuffer", optional_override([](const std::string &buffer, int width) {
                             return Image::thumbnail_buffer(buffer, width);
+                        }))
+        .class_function("thumbnailBuffer", optional_override([](emscripten::val buffer, int width) {
+                            Source source = Source::new_from_memory(buffer);
+                            return Image::thumbnail_source(source, width);
                         }))
         .class_function("thumbnailSource", &Image::thumbnail_source)
         .class_function("thumbnailSource", optional_override([](const Source &source, int width) {
